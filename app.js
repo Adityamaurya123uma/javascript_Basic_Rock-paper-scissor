@@ -1,65 +1,134 @@
-const computerChoiceDisplay = document.getElementById('computer-choice')
-const userChoiceDisplay = document.getElementById('user-choice')
-const resultDisplay = document.getElementById('result')
+const game = () => {
+    let pScore = 0;
+    let cScore = 0;
 
-// Generation of Users Choice
-const possibleChoices = document.querySelectorAll('button')
+    //Start the Game
+    const startGame = () => {
+        const playBtn = document.querySelector(".intro button");
+        const introScreen = document.querySelector(".intro");
+        const match = document.querySelector(".match");
 
-//Variable Declartion
-let userChoice
-let computerChoice
-let result
+        playBtn.addEventListener("click", () => {
+            introScreen.classList.add("fadeOut");
+            match.classList.add("fadeIn");
+        });
+    };
+    //Play Match
+    const playMatch = () => {
+        const options = document.querySelectorAll(".options button");
+        const playerHand = document.querySelector(".player-hand");
+        const computerHand = document.querySelector(".computer-hand");
+        const hands = document.querySelectorAll(".hands img");
 
-// Displaying users choice
-possibleChoices.forEach(possibleChoices => possibleChoices.addEventListener('click', (e) => {
-    userChoice = e.target.id
-    userChoiceDisplay.innerHTML = userChoice
-    generateComputerChoice()
-    getResult()
-}))
+        hands.forEach(hand => {
+            hand.addEventListener("animationend", function() {
+                this.style.animation = "";
+            });
+        });
+        //Computer Options
+        const computerOptions = ["rock", "paper", "scissors"];
 
+        options.forEach(option => {
+            option.addEventListener("click", function() {
+                //Computer Choice
+                const computerNumber = Math.floor(Math.random() * 3);
+                const computerChoice = computerOptions[computerNumber];
 
-// Generating and displaying computers choice
-function generateComputerChoice() {
-    const randomNumber = Math.floor(Math.random() * 3) + 1
+                setTimeout(() => {
+                    //Here is where we call compare hands
+                    compareHands(this.textContent, computerChoice);
+                    //Update Images
+                    playerHand.src = `./assets/${this.textContent}.png`;
+                    computerHand.src = `./assets/${computerChoice}.png`;
+                }, 2000);
+                //Animation
+                playerHand.style.animation = "shakePlayer 2s ease";
+                computerHand.style.animation = "shakeComputer 2s ease";
+            });
+        });
+    };
 
-    if (randomNumber === 1) {
-        computerChoice = "rock"
-    }
-    if (randomNumber === 2) {
-        computerChoice = "scissors"
-    }
-    if (randomNumber === 3) {
-        computerChoice = "paper"
+    const updateScore = () => {
+        const playerScore = document.querySelector(".player-score p");
+        const computerScore = document.querySelector(".computer-score p");
+        playerScore.textContent = pScore;
+        computerScore.textContent = cScore;
+    };
+
+    const compareHands = (playerChoice, computerChoice) => {
+        //Update Text
+        const winner = document.querySelector(".winner");
+        //Checking for a tie
+        if (playerChoice === computerChoice) {
+            winner.textContent = "It is a tie";
+            result();
+            return;
+        }
+        //Check for Rock
+        if (playerChoice === "rock") {
+            if (computerChoice === "scissors") {
+                winner.textContent = "Player Wins";
+                pScore++;
+                updateScore();
+                result();
+                return;
+            } else {
+                winner.textContent = "Computer Wins";
+                cScore++;
+                updateScore();
+                result();
+                return;
+            }
+        }
+        //Check for Paper
+        if (playerChoice === "paper") {
+            if (computerChoice === "scissors") {
+                winner.textContent = "Computer Wins";
+                cScore++;
+                updateScore();
+                result();
+                return;
+            } else {
+                winner.textContent = "Player Wins";
+                pScore++;
+                updateScore();
+                result();
+                return;
+            }
+        }
+        //Check for Scissors
+        if (playerChoice === "scissors") {
+            if (computerChoice === "rock") {
+                winner.textContent = "Computer Wins";
+                cScore++;
+                updateScore();
+                result();
+                return;
+            } else {
+                winner.textContent = "Player Wins";
+                pScore++;
+                updateScore();
+                result();
+                return;
+            }
+        }
+    };
+
+    const result = () => {
+        if (pScore === 3) {
+            alert('Player Wins');
+            document.location.reload(true);
+        }
+        if (cScore === 3) {
+            alert('Computer Wins');
+            document.location.reload(true);
+        }
     }
 
-    computerChoiceDisplay.innerHTML = computerChoice
-}
+    //Is call all the inner function
+    startGame();
+    playMatch();
+};
 
-// Generating and displaying result
-
-function getResult() {
-    if (computerChoice === userChoice) {
-        result = "its a draw!"
-    }
-
-    if (computerChoice === 'rock' && userChoice === 'paper') {
-        result = "you win!"
-    }
-    if (computerChoice === 'rock' && userChoice === 'scissors') {
-        result = "you lost!"
-    }
-    if (computerChoice === 'paper' && userChoice === 'rock') {
-        result = "you lost!"
-    }
-    if (computerChoice === 'paper' && userChoice === 'scissors') {
-        result = "you win!"
-    }
-    if (computerChoice === 'scissors' && userChoice === 'rock') {
-        result = "you win!"
-    }
-    if (computerChoice === 'scissors' && userChoice === 'paper') {
-        result = "you lost!"
-    }
-    resultDisplay.innerHTML = result
-}
+//start the game function
+game();
